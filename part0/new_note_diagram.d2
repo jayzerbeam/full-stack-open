@@ -1,0 +1,31 @@
+User posts a new note: {
+  shape: sequence_diagram
+  c: Client
+  s: Server
+  c.shape: Person
+  s.shape: Cylinder
+
+  POST request 1: {
+    c -> s.post1: POST: "https://studies.cs.helsinki.fi/exampleapp/new_note"
+    s.post1 -> c: 302 Redirect to "/notes"
+  }
+  GET request 1: {
+    c -> s.get1: GET: "/exampleapp/notes"
+    s.get1 -> c: HTML File
+  }
+  GET request 2: {
+    c -> s.get2: GET: "/exampleapp/main.css"
+    s.get2 -> c: CSS File
+  }
+  GET request 3: {
+    c -> s.get3: GET: "/exampleapp/main.js"
+    s.get3 -> c: JavaScript File
+    c -- s: The client starts executing the JavaScript code that fetches the JSON from the server
+  }
+  GET request 4: {
+    c -> s.get4: GET: "/exampleapp/data.json"
+    s.get4 -> c: JSON file
+    c -- s: The client executes the callback function that renders the notes
+  }
+}
+
