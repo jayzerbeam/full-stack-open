@@ -1,0 +1,26 @@
+User loads the SPA application: {
+  shape: sequence_diagram
+  c: Client
+  s: Server
+  c.shape: Person
+  s.shape: Cylinder
+
+  GET Request 1: {
+    c -> s.1: GET "https://studies.cs.helsinki.fi/exampleapp/spa"
+    s.1 -> c: spa.html file
+    c -- s: The HTML file contains a <link> tag and a <script> tag for the CSS and JS files that will be requested
+  }
+  GET Request 2: {
+    c -> s.2: GET "/exampleapp/main.css" 
+    s.2 -> c: main.css file 
+  }
+  GET Request 3: {
+    c -> s.3: GET "/exampleapp/spa.js"
+    s.3 -> c: spa.js file
+    c -- s: The client starts executing the JavaScript code that fetches the JSON from the Server
+  }
+  GET Request 4: {
+    c -> s.4: GET "/exampleapp/data.json"
+    s.4 -> c: data.json file
+  }
+}
