@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Button from "./Button";
+import Statistics from "./Statistics";
 
 const App = () => {
   const [good, setGood] = useState(0);
@@ -18,21 +19,6 @@ const App = () => {
     setBad(bad + 1);
   };
 
-  const sumOfRatings = () => {
-    return good + neutral + bad;
-  };
-
-  const getAveragePercent = () => {
-    let value = (good - bad) / sumOfRatings();
-    return isNaN(value) ? "" : value.toFixed(2).toString();
-  };
-
-  const getPositivePercent = () => {
-    let value = good / sumOfRatings();
-    // truncate to two decimal places
-    return isNaN(value) ? "" : value.toFixed(2).toString().concat("%");
-  };
-
   return (
     <div>
       <div>
@@ -41,15 +27,11 @@ const App = () => {
         <Button handleClick={handleNeutral} text="neutral" />
         <Button handleClick={handleBad} text="bad" />
       </div>
-      <div>
-        <h2>statistics</h2>
-        <p>good: {good}</p>
-        <p>neutral: {neutral}</p>
-        <p>bad: {bad}</p>
-        <p>all: {sumOfRatings()}</p>
-        <p>average: {getAveragePercent()}</p>
-        <p>positive: {getPositivePercent()}</p>
-      </div>
+      {good || bad || neutral ? (
+        <Statistics good={good} bad={bad} neutral={neutral} />
+      ) : (
+        <p>No feedback given. Click a button!</p>
+      )}
     </div>
   );
 };
