@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Filter from "./Filter";
+import Persons from "./Persons";
+import PersonForm from "./PersonForm";
 
 function App() {
   const [persons, setPersons] = useState([
@@ -9,7 +12,7 @@ function App() {
   ]);
   const [newNumber, setNewNumber] = useState("");
   const [newName, setNewName] = useState("");
-  const [filterValue, setFilterValue] = useState("");
+  const [filter, setFilter] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -41,45 +44,22 @@ function App() {
     setNewName(e.target.value);
   };
 
-  const filterEntries = (e) => {
-    setFilterValue(e.target.value);
-    // Must make a new filtered array
-    const filteredPersons = persons.filter((person) => {
-      person;
-    });
-    return filteredPersons;
+  const handleFilter = (e) => {
+    setFilter(e.target.value);
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        Filter with <input onChange={filterEntries} />
-      </div>
-      <form>
-        <h2>Add an entry</h2>
-        <div>
-          name: <input onChange={handleNameInput} />
-        </div>
-        <div>
-          number: <input onChange={handleNumberInput} />
-        </div>
-        <div>
-          <button type="submit" onClick={handleSubmit}>
-            add
-          </button>
-        </div>
-      </form>
+      <Filter handleFilter={handleFilter} />
+      <h2>Add an entry</h2>
+      <PersonForm
+        handleNameInput={handleNameInput}
+        handleNumberInput={handleNumberInput}
+        handleSubmit={handleSubmit}
+      />
       <h2>Entries</h2>
-      {filterValue !== "" ? (
-        <p>Test</p>
-      ) : (
-        persons.map((person) => (
-          <p key={person.id}>
-            {person.name}, {person.number}
-          </p>
-        ))
-      )}
+      <Persons filter={filter} persons={persons} />
     </div>
   );
 }
