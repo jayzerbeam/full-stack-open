@@ -1,4 +1,6 @@
-function Persons({ filter, persons }) {
+import Person from "./Person";
+
+function Persons({ filter, persons, handleDelete }) {
   return (
     <div>
       {filter !== ""
@@ -7,14 +9,18 @@ function Persons({ filter, persons }) {
               person.name.toLowerCase().includes(filter.toLowerCase()),
             )
             .map((person) => (
-              <p key={person.id}>
-                {person.name}, {person.number}
-              </p>
+              <Person
+                key={person.id}
+                person={person}
+                handleDelete={handleDelete}
+              />
             ))
         : persons.map((person) => (
-            <p key={person.id}>
-              {person.name}, {person.number}
-            </p>
+            <Person
+              key={person.id}
+              person={person}
+              handleDelete={handleDelete}
+            />
           ))}
     </div>
   );
