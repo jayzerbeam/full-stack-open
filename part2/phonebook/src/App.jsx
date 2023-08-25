@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import dbService from "./services/database.js";
 import Filter from "./Filter";
 import Persons from "./Persons";
 import PersonForm from "./PersonForm";
@@ -11,25 +11,47 @@ function App() {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      console.log(response);
+    dbService.getAll().then((response) => {
       setPersons(response.data);
     });
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleDelete = (id) => {
+    const entry = persons.find((person) => person.id === id);
+
+    if (window.confirm(`Are you sure you want to delete '${entry.name}'?`)) {
+      dbService.remove(id).then(() => {
+        setPersons(
+          persons.filter((person) => {
+            return person.id !== id;
+          }),
+        );
+      });
+    }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const data = {
+      name: newName,
+      number: newNumber,
+    };
 
     if (!isDupeEntry()) {
-      setPersons(
-        [...persons].concat({
-          name: newName,
-          number: newNumber,
-          id: persons[persons.length - 1].id + 1,
-        }),
-      );
+      dbService.create(data).then((response) => {
+        setPersons(persons.concat(response.data));
+      });
     } else {
-      alert(`${newName} is already in the phonebook.`);
+      const entry = persons.find((person) => person.name === newName);
+
+      if (window.confirm(`${newName} is in the database. Update number?`)) {
+        dbService.updateNumber(entry.id, data).then(() => {
+          dbService.getAll().then((response) => {
+            setPersons(response.data);
+          });
+        });
+      }
     }
   };
 
@@ -62,7 +84,7 @@ function App() {
         handleSubmit={handleSubmit}
       />
       <h2>Entries</h2>
-      <Persons filter={filter} persons={persons} />
+      <Persons filter={filter} persons={persons} handleDelete={handleDelete} />
     </div>
   );
 }
