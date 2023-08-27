@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import dbService from "./services/database.js";
+import Notification from "./Notification";
 import Filter from "./Filter";
 import Persons from "./Persons";
 import PersonForm from "./PersonForm";
@@ -9,6 +10,8 @@ function App() {
   const [newNumber, setNewNumber] = useState("");
   const [newName, setNewName] = useState("");
   const [filter, setFilter] = useState("");
+  const [notification, setNotification] = useState(null);
+  const [messageType, setMessageType] = useState(null);
 
   useEffect(() => {
     dbService.getAll().then((response) => {
@@ -41,16 +44,30 @@ function App() {
     if (!isDupeEntry()) {
       dbService.create(data).then((response) => {
         setPersons(persons.concat(response.data));
+        setNotification(`${newName} was added to the phonebook.`);
+        setMessageType("success");
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000);
       });
     } else {
       const entry = persons.find((person) => person.name === newName);
 
       if (window.confirm(`${newName} is in the database. Update number?`)) {
-        dbService.updateNumber(entry.id, data).then(() => {
-          dbService.getAll().then((response) => {
-            setPersons(response.data);
+        dbService
+          .updateNumber(entry.id, data)
+          .then(() => {
+            dbService.getAll().then((response) => {
+              setPersons(response.data);
+            });
+          })
+          .catch((error) => {
+            setNotification("There was an error with your request.");
+            setMessageType("error");
+            setTimeout(() => {
+              setNotification(null);
+            }, 3000);
           });
-        });
       }
     }
   };
@@ -76,6 +93,7 @@ function App() {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} messageType={messageType} />
       <Filter handleFilter={handleFilter} />
       <h2>Add an entry</h2>
       <PersonForm
