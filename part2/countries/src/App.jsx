@@ -3,6 +3,7 @@ import axios from "axios";
 import Country from "./Country";
 
 function App() {
+  const [countriesToShow, setCountriesToShow] = useState([]);
   const [allCountries, setAllCountries] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -28,6 +29,19 @@ function App() {
     );
   };
 
+  const showCountry = (idx) => {
+    setCountriesToShow(new Array(searchResults.length).fill(false));
+    setCountriesToShow(
+      countriesToShow.map((el, i) => {
+        if (i === idx) {
+          return !countriesToShow[idx];
+        } else {
+          return el;
+        }
+      }),
+    );
+  };
+
   const searchResultOutput = () => {
     if (searchResults.length === 1) {
       return (
@@ -47,19 +61,13 @@ function App() {
           {searchResults.map((country, idx) => (
             <li key={country.name.common}>
               <span>{country.name.common}&nbsp;</span>
-              <button onClick={() => getCountryDetails(idx)}>
-                show details
-              </button>
+              <button onClick={() => showCountry(idx)}>show details</button>
+              {countriesToShow[idx] ? <Country country={country} /> : null}
             </li>
           ))}
         </ul>
       );
     }
-  };
-
-  const getCountryDetails = (idx) => {
-    const countryDetails = searchResults[idx];
-    console.log("details: ", countryDetails);
   };
 
   return (
