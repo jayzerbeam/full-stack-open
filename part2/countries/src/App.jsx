@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Country from "./Country";
 
 function App() {
   const [allCountries, setAllCountries] = useState(null);
@@ -13,6 +14,8 @@ function App() {
     });
   }, []);
 
+  if (!allCountries) return null;
+
   const handleChange = (event) => {
     let searchTerm = event.target.value;
     setSearchTerm(searchTerm);
@@ -25,20 +28,46 @@ function App() {
     );
   };
 
+  const searchResultOutput = () => {
+    if (searchResults.length === 1) {
+      return (
+        <>
+          {searchResults.map((country) => (
+            <Country country={country} />
+          ))}
+        </>
+      );
+    } else if (searchResults.length <= 0) {
+      return <p>No results from your search.</p>;
+    } else if (searchResults.length >= 10) {
+      return <p>Too many results. Specify another filter</p>;
+    } else {
+      return (
+        <ul>
+          {searchResults.map((country, idx) => (
+            <li key={country.name.common}>
+              <span>{country.name.common}&nbsp;</span>
+              <button onClick={() => getCountryDetails(idx)}>
+                show details
+              </button>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+  };
+
+  const getCountryDetails = (idx) => {
+    const countryDetails = searchResults[idx];
+    console.log("details: ", countryDetails);
+  };
+
   return (
     <div>
       <form>
         <input type="text" onChange={handleChange} />
-        {searchResults.length <= 0 ? (
-          <p>No results from your search</p>
-        ) : (
-          <ul>
-            {searchResults.map((country) => (
-              <li key={country.name.common}>{country.name.common}</li>
-            ))}
-          </ul>
-        )}
       </form>
+      <div>{searchResultOutput()}</div>
     </div>
   );
 }
