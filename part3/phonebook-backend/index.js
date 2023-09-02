@@ -27,8 +27,21 @@ const phonebook = [
   },
 ];
 
-app.get("/api/phonebook", (_, res) => {
+app.get("/api/persons", (_, res) => {
   res.json(phonebook);
+});
+
+app.get("/info", (req, res) => {
+  res.send(
+    `<p>phonebook has info for ${
+      phonebook.length
+    } people</p><p>${new Date()}</p>`,
+  );
+});
+
+app.get("/api/persons/:id", (req, res) => {
+  const id = req.params.id;
+  res.send(`id: ${id}`);
 });
 
 app.listen(port, () => {
