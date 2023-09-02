@@ -39,6 +39,17 @@ const removeEntry = (id) => {
   });
 };
 
+const makeRandomNumber = () => {
+  const max = 999_999_999;
+  return Math.floor(Math.random() * max);
+};
+
+const incrementId = () => {
+  const maxId =
+    phonebook.length > 0 ? Math.max(...phonebook.map((n) => n.id)) : 0;
+  return maxId + 1;
+};
+
 app.get("/api/persons", (_, res) => {
   res.json(phonebook);
 });
@@ -68,6 +79,20 @@ app.delete("/api/persons/:id", (req, res) => {
   console.log(phonebook);
 
   res.status(204).end();
+});
+
+app.post("/api/persons/", (req, res) => {
+  const body = req.body;
+
+  const entry = {
+    id: incrementId(),
+    name: body.name,
+    number: String(makeRandomNumber()),
+  };
+
+  phonebook.concat(entry);
+
+  res.json(entry);
 });
 
 app.listen(port, () => {
