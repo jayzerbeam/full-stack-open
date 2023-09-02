@@ -4,7 +4,7 @@ const port = 3001;
 
 app.use(express.json());
 
-const phonebook = [
+let phonebook = [
   {
     id: 1,
     name: "Arto Hellas",
@@ -27,6 +27,18 @@ const phonebook = [
   },
 ];
 
+const getEntry = (id) => {
+  return phonebook.find((item) => {
+    return item.id === id;
+  });
+};
+
+const removeEntry = (id) => {
+  return phonebook.filter((item) => {
+    return item.id !== id;
+  });
+};
+
 app.get("/api/persons", (_, res) => {
   res.json(phonebook);
 });
@@ -35,21 +47,27 @@ app.get("/info", (_, res) => {
   res.send(
     `<p>phonebook has info for ${
       phonebook.length
-    } people</p><p>${new Date()}</p>`,
+    } people</p><p>request info: ${new Date()}</p>`,
   );
 });
 
 app.get("/api/persons/:id", (req, res) => {
   const id = Number(req.params.id);
-  const entry = phonebook.find((item) => {
-    return item.id === id;
-  });
+  const entry = getEntry(id);
 
   if (entry) {
     res.json(entry);
   } else {
     res.status(404).end();
   }
+});
+
+app.delete("/api/persons/:id", (req, res) => {
+  const id = Number(req.params.id);
+  phonebook = removeEntry(id);
+  console.log(phonebook);
+
+  res.status(204).end();
 });
 
 app.listen(port, () => {
