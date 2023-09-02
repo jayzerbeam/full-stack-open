@@ -31,7 +31,7 @@ app.get("/api/persons", (_, res) => {
   res.json(phonebook);
 });
 
-app.get("/info", (req, res) => {
+app.get("/info", (_, res) => {
   res.send(
     `<p>phonebook has info for ${
       phonebook.length
@@ -40,8 +40,16 @@ app.get("/info", (req, res) => {
 });
 
 app.get("/api/persons/:id", (req, res) => {
-  const id = req.params.id;
-  res.send(`id: ${id}`);
+  const id = Number(req.params.id);
+  const entry = phonebook.find((item) => {
+    return item.id === id;
+  });
+
+  if (entry) {
+    res.json(entry);
+  } else {
+    res.status(404).end();
+  }
 });
 
 app.listen(port, () => {
