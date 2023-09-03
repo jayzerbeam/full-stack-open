@@ -50,6 +50,12 @@ const incrementId = () => {
   return maxId + 1;
 };
 
+const hasDupeName = (name) => {
+  return phonebook.find(
+    (entry) => entry.name.toLowerCase() === name.toLowerCase(),
+  );
+};
+
 app.get("/api/persons", (_, res) => {
   res.json(phonebook);
 });
@@ -89,6 +95,16 @@ app.post("/api/persons/", (req, res) => {
     name: body.name,
     number: String(makeRandomNumber()),
   };
+
+  if (!entry.name) {
+    return res.status(400).json({
+      error: "name is missing",
+    });
+  } else if (hasDupeName(entry.name)) {
+    return res.status(400).json({
+      error: "entry for this name already exists",
+    });
+  }
 
   phonebook.concat(entry);
 
