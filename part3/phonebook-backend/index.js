@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
-const port = 3001;
+const PORT = process.env.PORT || 3001;
 
 morgan.token("req-body", (req, res) => {
   if (req.method === "POST") {
@@ -126,6 +126,6 @@ app.post("/api/persons/", (req, res) => {
   res.json(entry);
 });
 
-app.listen(port, () => {
-  console.log(`listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`listening on PORT ${PORT}`);
 });
