@@ -4,8 +4,18 @@ if (process.argv.length < 3) {
   console.log("give password as argument");
   process.exit(1);
 }
+if (process.argv[3] == "") {
+  console.log("give name as argument");
+  process.exit(1);
+}
+if (process.argv[4] == "") {
+  console.log("give number as argument");
+  process.exit(1);
+}
 
 const password = process.argv[2];
+const name = process.argv[3];
+const number = process.argv[4];
 
 const url = `mongodb+srv://fullstack:${password}@cluster0.z5mvlhq.mongodb.net/phonebookApp?retryWrites=true&w=majority`;
 
@@ -20,18 +30,21 @@ const entrySchema = new mongoose.Schema({
 const Entry = mongoose.model("Entries", entrySchema);
 
 const entry = new Entry({
-  name: "Arto Hellas",
-  number: "040-123456",
+  name: name,
+  number: number,
 });
 
-// Note.find({ important: true }).then((res) => {
-//   res.forEach((note) => {
-//     console.log(note);
-//   });
-//   mongoose.connection.close();
-// });
-
-entry.save().then((result) => {
-  console.log("entry saved!");
-  mongoose.connection.close();
-});
+if (process.argv.length === 3) {
+  Entry.find({}).then((res) => {
+    console.log("Phonebook:");
+    res.forEach((entry) => {
+      console.log(`${entry.name} ${entry.number}`);
+      mongoose.connection.close();
+    });
+  });
+} else {
+  entry.save().then((result) => {
+    console.log(`added ${name} number ${number} to the phonebook`);
+    mongoose.connection.close();
+  });
+}
