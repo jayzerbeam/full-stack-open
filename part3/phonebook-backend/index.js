@@ -1,8 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
-const PORT = process.env.PORT || 3001;
+const Entry = require("./models/mongo.js");
+const PORT = process.env.PORT;
 
 morgan.token("req-body", (req, res) => {
   if (req.method === "POST") {
@@ -19,29 +21,6 @@ app.use(
 );
 app.use(cors());
 app.use(express.static("dist"));
-
-let phonebook = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
 
 const getEntry = (id) => {
   return phonebook.find((item) => {
