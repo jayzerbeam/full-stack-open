@@ -64,10 +64,10 @@ app.get("/api/persons", (_, res) => {
 //   });
 // };
 //
-// const makeRandomNumber = () => {
-//   const max = 999_999_999;
-//   return Math.floor(Math.random() * max);
-// };
+const makeRandomNumber = () => {
+  const max = 999_999_999;
+  return Math.floor(Math.random() * max);
+};
 //
 // const incrementId = () => {
 //   const maxId =
@@ -89,29 +89,28 @@ app.get("/api/persons", (_, res) => {
 //   res.status(204).end();
 // });
 //
-// app.post("/api/persons/", (req, res) => {
-//   const body = req.body;
-//
-//   const entry = {
-//     id: incrementId(),
-//     name: body.name,
-//     number: String(makeRandomNumber()),
-//   };
-//
-//   if (!entry.name) {
-//     return res.status(400).json({
-//       error: "name is missing",
-//     });
-//   } else if (hasDupeName(entry.name)) {
-//     return res.status(400).json({
-//       error: "entry for this name already exists",
-//     });
-//   }
-//
-//   phonebook.concat(entry);
-//
-//   res.json(entry);
-// });
+app.post("/api/persons/", (req, res) => {
+  const body = req.body;
+
+  const entry = new Entry({
+    name: body.name,
+    number: String(makeRandomNumber()),
+  });
+
+  if (!entry.name) {
+    return res.status(400).json({
+      error: "name is missing",
+    });
+  }
+  // else if (hasDupeName(entry.name)) {
+  //   return res.status(400).json({
+  //     error: "entry for this name already exists",
+  //   });
+  // }
+  entry.save().then((savedEntry) => {
+    res.json(savedEntry);
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`listening on PORT ${PORT}`);
