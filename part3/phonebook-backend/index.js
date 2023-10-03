@@ -36,14 +36,18 @@ app.get("/info", async (_, res) => {
   );
 });
 
-app.get("/api/persons/:id", async (req, res) => {
-  const entry = await Entry.findById(req.params.id);
-
-  if (entry) {
-    res.json(entry);
-  } else {
-    res.status(404).end();
-  }
+app.get("/api/persons/:id", async (req, res, next) => {
+  const entry = await Entry.findById(req.params.id)
+    .then((entry) => {
+      if (entry) {
+        res.json(entry);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch((error) => {
+      next(error);
+    });
 });
 
 const makeRandomNumber = () => {
@@ -57,6 +61,21 @@ app.delete("/api/persons/:id", async (req, res) => {
   });
 });
 
+app.patch("/api/persons/:id", async (req, res, next) => {
+  const body = req.body;
+
+  const entry = new Entry({
+    name: body.name,
+    number: String(makeRandomNumber()),
+  });
+
+  await Entry.findOneAndUpdate({ name: entry.name }, { number: entry.number })
+    .then(() => {
+      res.status(200).json({ message: "number updated for this Entry" });
+    })
+    .catch((error) => next(error));
+});
+
 app.post("/api/persons/", async (req, res) => {
   const body = req.body;
 
@@ -65,19 +84,9 @@ app.post("/api/persons/", async (req, res) => {
     number: String(makeRandomNumber()),
   });
 
-  const isEntry = await Entry.findOne({ name: entry.name });
-
   if (!entry.name) {
     return res.status(400).json({
       error: "name is missing",
-    });
-  } else if (isEntry != null) {
-    await Entry.findOneAndUpdate(
-      { name: entry.name },
-      { number: entry.number },
-    );
-    return res.status(200).json({
-      message: "number updated for this Entry",
     });
   } else {
     entry.save().then((savedEntry) => {
@@ -85,6 +94,17 @@ app.post("/api/persons/", async (req, res) => {
     });
   }
 });
+
+const errorHandler = (error, req, res, next) => {
+  console.log(error.message);
+
+  if (error.name === "CastError") {
+    return res.status(400).send({ message: "malformatted id" });
+  }
+  next(error);
+};
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`listening on PORT ${PORT}`);
