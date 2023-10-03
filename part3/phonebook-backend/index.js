@@ -6,7 +6,7 @@ const app = express();
 const Entry = require("./models/mongo.js");
 const PORT = process.env.PORT;
 
-morgan.token("req-body", (req, res) => {
+morgan.token("req-body", (req, _) => {
   if (req.method === "POST") {
     return JSON.stringify(req.body);
   }
@@ -37,7 +37,7 @@ app.get("/info", async (_, res) => {
 });
 
 app.get("/api/persons/:id", async (req, res, next) => {
-  const entry = await Entry.findById(req.params.id)
+  await Entry.findById(req.params.id)
     .then((entry) => {
       if (entry) {
         res.json(entry);
@@ -61,7 +61,7 @@ app.delete("/api/persons/:id", async (req, res) => {
   });
 });
 
-app.patch("/api/persons/:id", async (req, res, next) => {
+app.put("/api/persons/:id", async (req, res, next) => {
   const body = req.body;
 
   const entry = new Entry({
@@ -69,14 +69,19 @@ app.patch("/api/persons/:id", async (req, res, next) => {
     number: String(makeRandomNumber()),
   });
 
-  await Entry.findOneAndUpdate({ name: entry.name }, { number: entry.number })
-    .then(() => {
-      res.status(200).json({ message: "number updated for this Entry" });
+  await Entry.findByIdAndUpdate(
+    req.params.id,
+    { name: entry.name, number: entry.number },
+    { new: true, runValidators: true, context: "query" },
+  )
+    .then((updatedEntry) => {
+      console.log(updatedEntry);
+      res.status(200).json({ message: "entry updated" });
     })
     .catch((error) => next(error));
 });
 
-app.post("/api/persons/", async (req, res) => {
+app.post("/api/persons/", async (req, res, next) => {
   const body = req.body;
 
   const entry = new Entry({
@@ -85,21 +90,36 @@ app.post("/api/persons/", async (req, res) => {
   });
 
   if (!entry.name) {
-    return res.status(400).json({
+    res.status(400).json({
       error: "name is missing",
     });
+  }
+
+  const doesEntryExist = await Entry.findOne({ name: entry.name });
+
+  if (doesEntryExist) {
+    await Entry.findOneAndUpdate({ name: entry.name }, { number: entry.number })
+      .then(() => {
+        res.status(200).json({ message: "number updated" });
+      })
+      .catch((error) => next(error));
   } else {
-    entry.save().then((savedEntry) => {
-      res.json(savedEntry);
-    });
+    entry
+      .save()
+      .then((savedEntry) => {
+        res.json(savedEntry);
+      })
+      .catch((error) => next(error));
   }
 });
 
-const errorHandler = (error, req, res, next) => {
+const errorHandler = (error, _, res, next) => {
   console.log(error.message);
 
   if (error.name === "CastError") {
     return res.status(400).send({ message: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return res.status(400).json({ error: error.message });
   }
   next(error);
 };

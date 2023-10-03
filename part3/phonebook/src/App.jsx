@@ -42,14 +42,23 @@ function App() {
     };
 
     if (!isDupeEntry()) {
-      dbService.create(data).then((response) => {
-        setPersons(persons.concat(response.data));
-        setNotification(`${newName} was added to the phonebook.`);
-        setMessageType("success");
-        setTimeout(() => {
-          setNotification(null);
-        }, 3000);
-      });
+      dbService
+        .create(data)
+        .then((response) => {
+          setPersons(persons.concat(response.data));
+          setNotification(`${newName} was added to the phonebook.`);
+          setMessageType("success");
+          setTimeout(() => {
+            setNotification(null);
+          }, 3000);
+        })
+        .catch((error) => {
+          setNotification(`Error: ${error.response.data.error}`);
+          setMessageType("error");
+          setTimeout(() => {
+            setNotification(null);
+          }, 3000);
+        });
     } else {
       const entry = persons.find((person) => person.name === newName);
 

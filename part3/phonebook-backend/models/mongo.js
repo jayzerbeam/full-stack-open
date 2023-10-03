@@ -7,7 +7,11 @@ const url = process.env.MONGODB_URL;
 mongoose.connect(url);
 
 const entrySchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    minLength: [3, "must be at least 3 characters long"],
+    required: true,
+  },
   number: String,
 });
 
