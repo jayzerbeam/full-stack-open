@@ -9,6 +9,9 @@
     "start": "node index.js",
     "build:ui": "rm -rf dist && cd ../phonebook && npm run build && cp -r dist ../phonebook-backend"
   },
+  "engines": {
+    "node": "18.x"
+  },
   "author": "Jason Long",
   "license": "MIT",
   "dependencies": {

@@ -1,10 +1,13 @@
-require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
 const Entry = require("./models/mongo.js");
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3001;
+
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 morgan.token("req-body", (req, _) => {
   if (req.method === "POST") {
