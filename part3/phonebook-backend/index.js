@@ -50,11 +50,6 @@ app.get("/api/persons/:id", async (req, res, next) => {
     });
 });
 
-const makeRandomNumber = () => {
-  const max = 999_999_999;
-  return Math.floor(Math.random() * max);
-};
-
 app.delete("/api/persons/:id", async (req, res) => {
   await Entry.findByIdAndDelete(req.params.id).then(() => {
     res.status(204).end();
@@ -66,7 +61,7 @@ app.put("/api/persons/:id", async (req, res, next) => {
 
   const entry = new Entry({
     name: body.name,
-    number: String(makeRandomNumber()),
+    number: body.number,
   });
 
   await Entry.findByIdAndUpdate(
@@ -86,7 +81,7 @@ app.post("/api/persons/", async (req, res, next) => {
 
   const entry = new Entry({
     name: body.name,
-    number: String(makeRandomNumber()),
+    number: body.number,
   });
 
   if (!entry.name) {
