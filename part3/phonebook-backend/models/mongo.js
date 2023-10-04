@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 mongoose.set("strictQuery", false);
 
-const url = process.env.MONGODB_URL;
+const url = process.env.MONGODB_URI;
 mongoose.connect(url);
 
 const entrySchema = new mongoose.Schema({
