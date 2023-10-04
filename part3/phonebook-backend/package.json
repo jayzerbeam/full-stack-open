@@ -7,7 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "build:ui": "rm -rf dist && cd ../phonebook && npm run build && cp -r dist ../phonebook-backend"
+    "build:ui": "rm -rf dist && cd ../phonebook && npm run build && cp -r dist ../phonebook-backend",
+    "build:serv": "rm -rf ../../../phonebook-backend && cd ../ && cp -r phonebook-backend ../../",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": "18.x"
   },
   "author": "Jason Long",
   "license": "MIT",
@@ -19,6 +24,7 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "eslint": "^8.50.0",
     "nodemon": "^3.0.1"
   }
 }
